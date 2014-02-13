@@ -1,4 +1,8 @@
-# -*- cmake -*-
+cmake_minimum_required(VERSION 2.6)
+
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
+INCLUDE_DIRECTORIES("${LUA_INCDIR}")
+LINK_DIRECTORIES("${LUA_LIBDIR}")
 
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckFunctionExists)
@@ -16,20 +20,36 @@ IF (UNIX OR NOT WIN32)
   CHECK_FUNCTION_EXISTS(getcwd HAVE_GETCWD)
 ENDIF (UNIX OR NOT WIN32)
 
-
-INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
-
 CONFIGURE_FILE("paths.h.in" "${CMAKE_CURRENT_BINARY_DIR}/paths.h")
-CONFIGURE_FILE("init.lua.in" "${CMAKE_CURRENT_BINARY_DIR}/init.lua")
 
 SET(src 
   "${CMAKE_CURRENT_SOURCE_DIR}/paths.c"
   "${CMAKE_CURRENT_BINARY_DIR}/paths.h" )
 
 SET(luasrc 
-  "${CMAKE_CURRENT_BINARY_DIR}/init.lua")
+  "${CMAKE_CURRENT_SOURCE_DIR}/init.lua")
 
-ADD_TORCH_PACKAGE(paths "${src}" "${luasrc}")
-ADD_TORCH_DOK(dok paths "Fundamentals" "Paths and files utilities" 1.2)
+# When using MSVC
+IF(MSVC)
+  # we want to respect the standard, and we are bored of those **** .
+  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE=1)
+ENDIF(MSVC)
 
-TARGET_LINK_LIBRARIES(paths liblua-shared)
+ADD_LIBRARY("paths" MODULE ${src})
+SET_TARGET_PROPERTIES("paths" PROPERTIES
+  PREFIX "lib"
+  IMPORT_PREFIX "lib")
+
+IF(APPLE)
+  SET_TARGET_PROPERTIES("paths" PROPERTIES
+    LINK_FLAGS "-undefined dynamic_lookup")
+ENDIF()
+
+INSTALL(FILES ${luasrc} DESTINATION ${LUADIR}/paths)
+INSTALL(TARGETS paths
+  LIBRARY DESTINATION ${LIBDIR}
+  RUNTIME DESTINATION ${LIBDIR})
+
+IF(LUALIB)
+  TARGET_LINK_LIBRARIES(paths ${LUALIB})
+ENDIF()
