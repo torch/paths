@@ -112,7 +112,7 @@ static int
 filep(lua_State *L, int i)
 {
   const char *s = luaL_checkstring(L, i);
-#ifdef LUA_WIN
+#ifdef _WIN32
   struct _stat buf;
   if (_stat(s,&buf) < 0)
     return 0;
@@ -133,7 +133,7 @@ static int
 dirp(lua_State *L, int i)
 {
   const char *s = luaL_checkstring(L, i);
-#ifdef LUA_WIN
+#ifdef _WIN32
   char buffer[8];
   struct _stat buf;
   const char *last;
@@ -177,7 +177,7 @@ lua_basename(lua_State *L)
   const char *fname = luaL_checkstring(L, 1);
   const char *suffix = luaL_optstring(L, 2, 0);
 
-#ifdef LUA_WIN
+#ifdef _WIN32
 
   int sl;
   const char *p, *s;
@@ -261,7 +261,7 @@ lua_dirname(lua_State *L)
 {
   const char *fname = luaL_checkstring(L, 1);
 
-#ifdef LUA_WIN
+#ifdef _WIN32
 
   const char *s;
   const char *p;
@@ -347,7 +347,7 @@ lua_dirname(lua_State *L)
 static int
 lua_cwd(lua_State *L)
 {
-#ifdef LUA_WIN
+#ifdef _WIN32
 
   char drv[2];
   int l;
@@ -402,7 +402,7 @@ concat_fname(lua_State *L, const char *fname)
 {
   const char *from = lua_tostring(L, -1);
 
-#ifdef LUA_WIN
+#ifdef _WIN32
 
   const char *s;
   SB sb;
@@ -581,7 +581,7 @@ lua_dir(lua_State *L)
   int k = 0;
   const char *s = luaL_checkstring(L, 1);
 
-#ifdef LUA_WIN
+#ifdef _WIN32
 
   SB sb;
   struct _finddata_t info;
@@ -724,7 +724,7 @@ add_tmpname(lua_State *L, const char *tmp)
 static int 
 lua_tmpname(lua_State *L)
 {
-#ifdef LUA_WIN
+#ifdef _WIN32
   char *tmp = _tempnam("c:/temp", "luatmp");
 #else
   char *tmp = tempnam(NULL, "luatmp");
@@ -774,7 +774,7 @@ lua_mkdir(lua_State *L)
    lua_call(L, 1, 1);
    if (! dirp(L, -1))
       lua_call(L, 1, 3);
-#ifdef LUA_WIN
+#ifdef _WIN32
    status = _mkdir(s);
 #else
    status = mkdir(s, 0777);
@@ -786,7 +786,7 @@ static int
 lua_rmdir(lua_State *L)
 {
   const char *s = luaL_checkstring(L, 1);
-#ifdef LUA_WIN
+#ifdef _WIN32
   int status = _rmdir(s);
 #else
   int status = rmdir(s);
@@ -802,7 +802,7 @@ lua_rmdir(lua_State *L)
 static int 
 lua_uname(lua_State *L)
 {
-#if defined(LUA_WIN)
+#if defined(_WIN32)
   const char *name;
   SYSTEM_INFO info;
   lua_pushliteral(L, "Windows");
@@ -840,7 +840,7 @@ lua_uname(lua_State *L)
 static int 
 lua_getregistryvalue(lua_State *L)
 {
-#ifdef LUA_WIN
+#ifdef _WIN32
     static char *keynames[] = {
         "HKEY_CLASSES_ROOT",
         "HKEY_CURRENT_CONFIG",
@@ -966,7 +966,7 @@ lua_getregistryvalue(lua_State *L)
 # define LL_SYM(h,sym) dlsym(h, sym)
 #endif
 
-#ifdef LUA_WIN
+#ifdef _WIN32
 # define NEED_PATH_REQUIRE 1
 # include <windows.h>
 # define LL_LOAD(h,fname) h=(void*)LoadLibraryA(fname)
