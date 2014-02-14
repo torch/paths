@@ -1,5 +1,3 @@
-# -*- lua -*-
-
 require 'libpaths'
 
 local assert = assert
@@ -11,39 +9,6 @@ local os = os
 local g = _G
 
 module('paths')
-
-install_prefix = [[@Torch_INSTALL_PREFIX@]]
-install_bin_subdir = [[@Torch_INSTALL_BIN_SUBDIR@]]
-install_man_subdir = [[@Torch_INSTALL_MAN_SUBDIR@]]
-install_lib_subdir = [[@Torch_INSTALL_LIB_SUBDIR@]]
-install_share_subdir = [[@Torch_INSTALL_SHARE_SUBDIR@]]
-install_include_subdir = [[@Torch_INSTALL_INCLUDE_SUBDIR@]]
-install_hlp_subdir = [[@Torch_INSTALL_HLP_SUBDIR@]]
-install_html_subdir = [[@Torch_INSTALL_HTML_SUBDIR@]]
-install_cmake_subdir = [[@Torch_INSTALL_CMAKE_SUBDIR@]]
-install_lua_path_subdir = [[@Torch_INSTALL_LUA_PATH_SUBDIR@]]
-install_lua_cpath_subdir = [[@Torch_INSTALL_LUA_CPATH_SUBDIR@]]
-install_bin_ridbus = [[@Torch_INSTALL_BIN_RIDBUS@]]
-install_cmake_ridbus = [[@Torch_INSTALL_CMAKE_RIDBUS@]]
-
-local e = execdir()
-if e ~= nil then
-   install_prefix = concat(e,install_bin_ridbus)
-end
-
-install_bin = concat(install_prefix, install_bin_subdir)
-install_man = concat(install_prefix, install_man_subdir)
-install_lib = concat(install_prefix, install_lib_subdir)
-install_share = concat(install_prefix, install_share_subdir)
-install_include = concat(install_prefix, install_include_subdir)
-install_hlp = concat(install_prefix, install_hlp_subdir)
-install_html = concat(install_prefix, install_html_subdir)
-install_cmake = concat(install_prefix, install_cmake_subdir)
-install_lua_path = concat(install_prefix, install_lua_path_subdir)
-install_lua_cpath = concat(install_prefix, install_lua_cpath_subdir)
-
-assert(concat(install_bin,install_bin_ridbus) == install_prefix:gsub('/$',''))
-assert(concat(install_cmake,install_cmake_ridbus) == install_prefix:gsub('/$',''))
 
 function is_win()
    return uname():match('Windows')
