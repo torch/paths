@@ -953,7 +953,7 @@ lua_getregistryvalue(lua_State *L)
 /* ------------------------------------------------------ */
 /* require (with global flag) */
 
-#ifdef LUA_USE_DLOPEN
+#ifdef HAVE_DLOPEN
 # define NEED_PATH_REQUIRE 1
 # include <dlfcn.h>
 # ifndef RTLD_LAZY
