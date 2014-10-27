@@ -985,6 +985,10 @@ static int readable (const char *filename)
   return 1;
 }
 
+#ifndef LUA_PATHSEP /* LUA52 compatibility defs */
+#define LUA_PATHSEP ';'
+#define PATHS_LUA_CLEANUP_DEFS 1
+#endif
 static const char *pushnexttemplate (lua_State *L, const char *path) 
 {
   const char *l;
@@ -995,6 +999,9 @@ static const char *pushnexttemplate (lua_State *L, const char *path)
   lua_pushlstring(L, path, l - path);  /* template */
   return l;
 }
+#ifdef PATHS_LUA_CLEANUP_DEFS /* cleanup after yourself */
+#undef LUA_PATHSEP
+#endif
 
 static const char *pushfilename (lua_State *L, const char *name) 
 {
