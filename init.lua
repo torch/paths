@@ -6,27 +6,24 @@ local pcall = pcall
 local type = type
 local ipairs = ipairs
 local os = os
-local g = _G
 
-module('paths')
-
-function is_win()
-   return uname():match('Windows')
+function paths.is_win()
+   return paths.uname():match('Windows')
 end
 
-function is_mac()
-   return uname():match('Darwin')
+function paths.is_mac()
+   return paths.uname():match('Darwin')
 end
 
-if is_win() then
-   home = os.getenv('HOMEDRIVE') or 'C:'
-   home = home .. ( os.getenv('HOMEPATH') or '\\' )
+if paths.is_win() then
+   paths.home = os.getenv('HOMEDRIVE') or 'C:'
+   paths.home = paths.home .. ( os.getenv('HOMEPATH') or '\\' )
 else
-   home = os.getenv('HOME') or '.'
+   paths.home = os.getenv('HOME') or '.'
 end
 
-function files(s)
-   local d = dir(s)
+function paths.files(s)
+   local d = paths.dir(s)
    local n = 0
    return function()
              n = n + 1
@@ -38,81 +35,83 @@ function files(s)
           end
 end
 
-function thisfile(arg, depth)
+function paths.thisfile(arg, depth)
    local s = debug.getinfo(depth or 2).source
    if type(s) ~= "string" then
       s = nil
    elseif s:match("^@") then     -- when called from a file
       s = concat(s:sub(2))
    elseif s:match("^qt[.]") then -- when called from a qtide editor
-      local function z(s) return g.qt[s].fileName:tostring() end 
+      local function z(s) return qt[s].fileName:tostring() end 
       local b, f = pcall(z, s:sub(4));
       if b and f and f ~= "" then s = f else s = nil end
    end
    if type(arg) == "string" then
-      if s then s = concat(dirname(s), arg) else s = arg end
+      if s then s = concat(paths.dirname(s), arg) else s = arg end
    end 
    return s
 end
 
-function dofile(f, depth)
-   local s = thisfile(nil, 1 + (depth or 2))
+function paths.dofile(f, depth)
+   local s = paths.thisfile(nil, 1 + (depth or 2))
    if s and s ~= "" then
-      f = concat(dirname(s),f)
+      f = concat(paths.dirname(s),f)
    end
-   return g.dofile(f)
+   return dofile(f)
 end
 
-function rmall(d, more)
+function paths.rmall(d, more)
    if more ~= 'yes' then
       return nil, "missing second argument ('yes')"
-   elseif filep(d) then
+   elseif paths.filep(d) then
       return os.remove(d)
-   elseif dirp(d) then
-      for f in files(d) do
+   elseif paths.dirp(d) then
+      for f in paths.files(d) do
          if f ~= '.' and f ~= '..' then
             local ff = concat(d, f)
-            local r0,r1,r2 = rmall(ff, more)
+            local r0,r1,r2 = paths.rmall(ff, more)
             if not r0 then
                return r0,r1,ff
             end
         end
      end
-     return rmdir(d)
+     return paths.rmdir(d)
    else
      return nil, "not a file or directory", d
    end
 end
 
-function findprogram(...)
+function paths.findprogram(...)
    for _,exe in ipairs{...} do
-      if is_win() then
+      if paths.is_win() then
          if not exe:match('[.]exe$') then
             exe = exe .. '.exe'
          end
          local path, k, x = os.getenv("PATH") or "."
          for dir in path:gmatch('[^;]+') do
             x = concat(dir, exe)
-            if filep(x) then return x end
+            if paths.filep(x) then return x end
          end
          local function clean(s)
             if s:match('^"') then return s:match('[^"]+') else return s end 
          end
          k = 'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\' .. exe
-         x = getregistryvalue('HKEY_CURRENT_USER', k, '')
+         x = paths.getregistryvalue('HKEY_CURRENT_USER', k, '')
          if type(x) == 'string' then return clean(x) end
-         x = getregistryvalue('HKEY_LOCAL_MACHINE', k, '')
+         x = paths.getregistryvalue('HKEY_LOCAL_MACHINE', k, '')
          if type(x) == 'string' then return clean(x) end
          k = 'Applications\\' .. exe .. '\\shell\\open\\command'
-         x = getregistryvalue('HKEY_CLASSES_ROOT', k, '')
+         x = paths.getregistryvalue('HKEY_CLASSES_ROOT', k, '')
          if type(x) == 'string' then return clean(x) end
       else
          local path = os.getenv("PATH") or "."
          for dir in path:gmatch('[^:]+') do
             local x = concat(dir, exe)
-            if filep(x) then return x end
+            if paths.filep(x) then return x end
          end
       end
    end
    return nil
 end
+
+return paths

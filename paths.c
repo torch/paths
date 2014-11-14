@@ -985,8 +985,8 @@ static int readable (const char *filename)
   return 1;
 }
 
-#ifndef LUA_PATHSEP /* LUA52 compatibility defs */
-#define LUA_PATHSEP ';'
+#if LUA_VERSION_NUM == 502 /* LUA52 compatibility defs */
+#define LUA_PATHSEP ";"
 #define PATHS_LUA_CLEANUP_DEFS 1
 #endif
 static const char *pushnexttemplate (lua_State *L, const char *path) 
@@ -1007,7 +1007,7 @@ static const char *pushfilename (lua_State *L, const char *name)
 {
   const char *path;
   const char *filename;
-  lua_getfield(L, LUA_GLOBALSINDEX, "package");
+  lua_getglobal(L, "package");
   lua_getfield(L, -1, "cpath");
   lua_remove(L, -2);
   if (! (path = lua_tostring(L, -1)))
@@ -1075,7 +1075,7 @@ static int
 path_require(lua_State *L)
 {
   int narg = lua_gettop(L);
-  lua_getfield(L, LUA_GLOBALSINDEX, "require");
+  lua_getglobal(L, "require");
   lua_insert(L, 1);
   lua_call(L, narg, 1);
   return 1;
@@ -1114,7 +1114,11 @@ luaopen_libpaths(lua_State *L)
 {
   lua_newtable(L);
   lua_pushvalue(L, -1);
-  lua_setfield(L, LUA_GLOBALSINDEX, "paths");
+  lua_setglobal(L, "paths");
+#if LUA_VERSION_NUM == 502
+  luaL_setfuncs(L, paths__, 0);
+#else
   luaL_register(L, NULL, paths__);
+#endif
   return 1;
 }
