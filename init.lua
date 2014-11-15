@@ -40,14 +40,14 @@ function paths.thisfile(arg, depth)
    if type(s) ~= "string" then
       s = nil
    elseif s:match("^@") then     -- when called from a file
-      s = concat(s:sub(2))
+      s = paths.concat(s:sub(2))
    elseif s:match("^qt[.]") then -- when called from a qtide editor
       local function z(s) return qt[s].fileName:tostring() end 
       local b, f = pcall(z, s:sub(4));
       if b and f and f ~= "" then s = f else s = nil end
    end
    if type(arg) == "string" then
-      if s then s = concat(paths.dirname(s), arg) else s = arg end
+      if s then s = paths.concat(paths.dirname(s), arg) else s = arg end
    end 
    return s
 end
@@ -55,7 +55,7 @@ end
 function paths.dofile(f, depth)
    local s = paths.thisfile(nil, 1 + (depth or 2))
    if s and s ~= "" then
-      f = concat(paths.dirname(s),f)
+      f = paths.concat(paths.dirname(s),f)
    end
    return dofile(f)
 end
@@ -68,7 +68,7 @@ function paths.rmall(d, more)
    elseif paths.dirp(d) then
       for f in paths.files(d) do
          if f ~= '.' and f ~= '..' then
-            local ff = concat(d, f)
+            local ff = paths.concat(d, f)
             local r0,r1,r2 = paths.rmall(ff, more)
             if not r0 then
                return r0,r1,ff
@@ -89,7 +89,7 @@ function paths.findprogram(...)
          end
          local path, k, x = os.getenv("PATH") or "."
          for dir in path:gmatch('[^;]+') do
-            x = concat(dir, exe)
+            x = paths.concat(dir, exe)
             if paths.filep(x) then return x end
          end
          local function clean(s)
@@ -106,7 +106,7 @@ function paths.findprogram(...)
       else
          local path = os.getenv("PATH") or "."
          for dir in path:gmatch('[^:]+') do
-            local x = concat(dir, exe)
+            local x = paths.concat(dir, exe)
             if paths.filep(x) then return x end
          end
       end
