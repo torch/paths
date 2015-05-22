@@ -339,6 +339,23 @@ lua_dirname(lua_State *L)
 }
 
 
+static int
+lua_extname(lua_State *L)
+{
+  const char *fname = luaL_checkstring(L, 1);
+  const char *p;
+
+  p = fname + strlen(fname) - 1;
+  while (p >= fname) {
+    if (*p == '.') {
+      lua_pushstring(L, p + 1);
+      return 1;
+    }
+    p--;
+  }
+  return 0;
+}
+
 
 /* ------------------------------------------------------ */
 /* cwd and concat */
@@ -1095,6 +1112,7 @@ static const struct luaL_Reg paths__ [] = {
   {"dirp", lua_dirp},
   {"basename", lua_basename},
   {"dirname", lua_dirname},
+  {"extname", lua_extname},
   {"cwd", lua_cwd},
   {"concat", lua_concatfname},
   {"execdir", lua_execdir},

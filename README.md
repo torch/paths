@@ -41,6 +41,11 @@ This is similar to the well know shell command `"basename"`.
 Return the name of directory containing file `path`.
 This is similar to the well known shell command `"dirname"`.
 
+<a name="paths.extname"/>
+### paths.extname(path) ###
+
+Return the extension of the `path` or nil if none is found.
+
 <a name="paths.concat"/>
 ### paths.concat([path1,....,pathn]) ###
 
