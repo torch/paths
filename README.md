@@ -91,33 +91,72 @@ because it makes sure that the files are removed on exit.
 In addition, `os.tmpname()` under windows often returns filenames
 for which the user has no permission to write.
 
-
-
-
 <a name="paths.dirs.dok"/>
 ## Directory functions ##
 
 The following functions can be used
 to examine directory contents or manipulate directories.
 
-
 <a name="paths.dir"/>
 ### paths.dir(dname) ###
 
-Return a table containing the files in directory `dname`.
-This function return `nil` if the specified directory
-does not exists.
+Return a table containing the files and directories in directory `dname`.
+This function return `nil` if the specified directory does not exists. 
+For linux, this includes the `.` and `..` directories.
 
 <a name="paths.files"/>
-### paths.files(dname) ###
+### paths.files(dname [, include]) ###
 
-Returns an iterator over the files located in directory `dname`.
+Returns an iterator over the files and directories located in directory `dname`.
+For linux, this includes the `.` and `..` directories. 
 This can be used in *__for__* expression as shown below:
+
+```lua
+for f in paths.files(".") do
+   print(f)
+end
 ```
-   for f in paths.files(".") do
-     print(f)
-   end
+
+Optional argument `include` is either a function or a string used to 
+determine which files are to be included. The function takes the filename 
+as argument and should return true if the file is to be included. 
+When a string is provided, the following function is used :
+
+```lua
+function(file) 
+   return file:find(f) 
+end
 ```
+
+Files and directories of sub-folders aren't included.
+
+<a name="paths.iterdirs"/>
+### paths.iterdirs(dname) ###
+
+Returns an iterator over the directories located in directory `dname`.
+This can be used in *__for__* expression as shown below:
+
+```lua
+for dir in paths.iterdirs(".") do
+   print(dir)
+end
+```
+
+Directories of sub-folders, and the `.` and `..` folders aren't included.
+
+<a name="paths.iterdirs"/>
+### paths.iterfiles(dname) ###
+
+Returns an iterator over the files (non-directories) located in directory `dname`.
+This can be used in *__for__* expression as shown below:
+
+```lua
+for file in paths.iterfiles(".") do
+   print(file)
+end
+```
+
+Files of sub-folders, and the `.` and `..` folders aren't included.
 
 <a name="paths.mkdir"/>
 ### paths.mkdir(s) ###
