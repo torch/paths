@@ -22,17 +22,41 @@ else
    paths.home = os.getenv('HOME') or '.'
 end
 
-function paths.files(s)
+function paths.files(s, f)
    local d = paths.dir(s)
    local n = 0
+   if torch.type(f) == 'string' then
+      local pattern = f
+      f = function(file) return file:find(pattern) end
+   elseif f and torch.type(f) ~= 'function' then
+      error("Expecting optional arg 2 to be function or string. Got : "..torch.type(f))
+   end
+   f = f or function(file) return true end
+   local n = 0
    return function()
-             n = n + 1
-             if (d and n <= #d) then
-                return d[n]
-             else
-                return nil
-             end
-          end
+      while true do
+         n = n + 1
+         if d == nil or n > #d then
+            return nil
+         elseif f(d[n]) then
+            return d[n]
+         end
+      end
+   end
+end
+
+function paths.iterdirs(s)
+   return paths.files(s, 
+      function(dir)
+         return paths.dirp(paths.concat(s, dir)) and dir ~= '.' and dir ~= '..'
+      end)
+end
+   
+function paths.iterfiles(s)
+   return paths.files(s, 
+      function(file)
+         return paths.filep(paths.concat(s, file)) and file ~= '.' and file ~= '..' 
+      end)
 end
 
 function paths.thisfile(arg, depth)
