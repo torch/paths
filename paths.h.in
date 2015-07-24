@@ -19,7 +19,7 @@
 #endif
 
 
-#ifdef LUA_WIN
+#ifdef _WIN32
 
 # include <errno.h>
 # include <windows.h>
