@@ -8,7 +8,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(LUA_WIN)
 # ifdef paths_EXPORTS
 #  define PATHS_API __declspec(dllexport)
 # else
@@ -19,7 +19,7 @@
 #endif
 
 
-#ifdef LUA_WIN
+#if defined(_WIN32) || defined(LUA_WIN)
 
 # include <errno.h>
 # include <windows.h>
