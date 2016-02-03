@@ -1002,7 +1002,7 @@ static int readable (const char *filename)
   return 1;
 }
 
-#if LUA_VERSION_NUM == 502 /* LUA52 compatibility defs */
+#if LUA_VERSION_NUM >= 502 /* LUA52 compatibility defs */
 #define LUA_PATHSEP ";"
 #define PATHS_LUA_CLEANUP_DEFS 1
 #endif
