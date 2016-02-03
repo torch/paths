@@ -1133,7 +1133,7 @@ luaopen_libpaths(lua_State *L)
   lua_newtable(L);
   lua_pushvalue(L, -1);
   lua_setglobal(L, "paths");
-#if LUA_VERSION_NUM == 502
+#if LUA_VERSION_NUM >= 502
   luaL_setfuncs(L, paths__, 0);
 #else
   luaL_register(L, NULL, paths__);
