@@ -25,10 +25,10 @@ end
 function paths.files(s, f)
    local d = paths.dir(s)
    local n = 0
-   if torch.type(f) == 'string' then
+   if type(f) == 'string' then
       local pattern = f
       f = function(file) return file:find(pattern) end
-   elseif f and torch.type(f) ~= 'function' then
+   elseif f and type(f) ~= 'function' then
       error("Expecting optional arg 2 to be function or string. Got : "..torch.type(f))
    end
    f = f or function(file) return true end
