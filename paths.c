@@ -136,7 +136,6 @@ dirp(lua_State *L, int i)
 #ifdef _WIN32
   char buffer[8];
   struct _stat buf;
-  const char *last;
   if ((s[0]=='/' || s[0]=='\\') && 
       (s[1]=='/' || s[1]=='\\') && !s[2]) 
     return 1;
