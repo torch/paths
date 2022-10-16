@@ -2,7 +2,7 @@ package = "paths"
 version = "scm-1"
 
 source = {
-   url = "git://github.com/torch/paths.git",
+   url = "https://github.com/torch/paths.git",
 }
 
 description = {
